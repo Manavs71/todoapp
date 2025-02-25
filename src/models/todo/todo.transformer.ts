@@ -1,3 +1,5 @@
+import type { TodoCreateDto } from './create/todoCreateDto.model'
+import type { TodoCreateForm } from './create/todoCreateForm.model'
 import type { todoIndexDto } from './index/todoDto.model'
 import type { TodoIndex } from './index/todoIndex.model'
 import type { TodoIndexFilters } from './index/todoIndexFilters.model'
@@ -12,6 +14,7 @@ export class TodoIndexTransformer {
       updatedAt: dto.updatedAt,
       completed: dto.completed,
       description: dto.description,
+      deadline: dto.deadline ?? 'deadline not set'
     }
   }
 }
@@ -21,3 +24,15 @@ export class TodoIndexFiltersTransformer {
     return filters
   }
 }
+
+
+  export class TodoCreateTransformer {
+    static toDto(form: TodoCreateForm): TodoCreateDto {
+      return {
+        title: form.title,
+        description: form.description,
+        deadline: form.deadline
+      }
+    }
+  }
+  
