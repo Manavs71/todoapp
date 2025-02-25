@@ -24,7 +24,7 @@
     "src/**/*.d.ts",
     "src/**/*.vue",
     "tailwind.config.ts",
-    "postcss.config.js"
-  ],
+    "postcss.config.js",
+    "openapi.config.ts"],
   "exclude": ["src/**/__tests__/*"]
 }

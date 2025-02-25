@@ -1,29 +1,30 @@
 import type { PaginationOptions } from '@wisemen/vue-core'
 
+import type { SortDirection } from '@/client'
+
 const DEFAULT_OFFSET = 0
 const DEFAULT_LIMIT = 20
 
-export type PaginationParams<TFilterSchema> = {
+export interface PaginationDtoParams<TFilterSchema, TSortKeys> {
   filter: TFilterSchema
-  search?: string
-  sort?: {
-    field: string
-    order: 'asc' | 'desc'
-  }[]
-} & {
   pagination: {
     limit: number
     offset: number
   }
+  search?: string
+  sort: {
+    key: TSortKeys
+    order: SortDirection
+  }[]
 }
 
 interface PaginationSort {
-  direction: 'asc' | 'desc'
+  direction: SortDirection
   key: string
 }
 
-export class PaginationDtoBuilder<TFilterSchema> {
-  private paginationOptions: PaginationParams<TFilterSchema>
+export class PaginationDtoBuilder<TFilterSchema, TSortKeys = Record<string, string>> {
+  private paginationOptions: PaginationDtoParams<TFilterSchema, TSortKeys>
 
   constructor(paginationOptions?: PaginationOptions<TFilterSchema>) {
     const limit = (paginationOptions?.pagination.limit ?? DEFAULT_LIMIT)
@@ -40,7 +41,7 @@ export class PaginationDtoBuilder<TFilterSchema> {
         offset,
       },
       search: paginationOptions?.search,
-    } as PaginationParams<TFilterSchema>
+    } as PaginationDtoParams<TFilterSchema, TSortKeys>
 
     Object.entries(allFilters).forEach(([
       key,
@@ -51,56 +52,61 @@ export class PaginationDtoBuilder<TFilterSchema> {
 
     if (paginationOptions?.sort !== undefined) {
       this.withSort({
-        direction: paginationOptions.sort.direction,
+        direction: paginationOptions.sort.direction as SortDirection,
         key: paginationOptions.sort.key,
       })
     }
   }
 
-  public build<TFilterSchemaDto>(transformer: (filters: TFilterSchema)
-  => TFilterSchemaDto): PaginationParams<TFilterSchemaDto> {
+  public build<TFilterSchemaDto, TSortKeys>(
+    transformer?: (filters: TFilterSchema) => TFilterSchemaDto,
+  ): PaginationDtoParams<TFilterSchemaDto, TSortKeys> {
     return {
       ...this.paginationOptions,
-      filter: transformer(this.paginationOptions.filter as TFilterSchema),
+      filter: transformer?.(this.paginationOptions.filter as TFilterSchema) as TFilterSchemaDto,
+      sort: this.paginationOptions?.sort?.map((sort) => ({
+        key: sort.key as unknown as TSortKeys,
+        order: sort.order,
+      })) ?? [],
     }
   }
 
   public withFilter<TKey extends keyof TFilterSchema>(
     key: TKey,
     value: TFilterSchema[TKey] | null | undefined,
-  ): PaginationDtoBuilder<TFilterSchema> {
+  ): PaginationDtoBuilder<TFilterSchema, TSortKeys> {
     if (value !== null && value !== '') {
       this.paginationOptions.filter = {
         ...this.paginationOptions.filter,
         [key]: value,
-      }
+      } as TFilterSchema
     }
 
     return this
   }
 
-  public withLimit(limit: number): PaginationDtoBuilder<TFilterSchema> {
+  public withLimit(limit: number): PaginationDtoBuilder<TFilterSchema, TSortKeys> {
     this.paginationOptions.pagination.limit = limit
 
     return this
   }
 
-  public withOffset(offset: number): PaginationDtoBuilder<TFilterSchema> {
+  public withOffset(offset: number): PaginationDtoBuilder<TFilterSchema, TSortKeys> {
     this.paginationOptions.pagination.offset = offset
 
     return this
   }
 
-  public withSearch(search: string): PaginationDtoBuilder<TFilterSchema> {
+  public withSearch(search: string): PaginationDtoBuilder<TFilterSchema, TSortKeys> {
     this.paginationOptions.search = search
 
     return this
   }
 
-  public withSort(sort: PaginationSort): PaginationDtoBuilder<TFilterSchema> {
+  public withSort(sort: PaginationSort): PaginationDtoBuilder<TFilterSchema, TSortKeys> {
     this.paginationOptions.sort = [
       {
-        field: sort.key,
+        key: sort.key as TSortKeys,
         order: sort.direction,
       },
     ]
