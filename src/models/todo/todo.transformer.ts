@@ -13,8 +13,8 @@ export class TodoIndexTransformer {
       createdAt: dto.createdAt,
       updatedAt: dto.updatedAt,
       completed: dto.completed,
+      deadline: dto.deadline ?? 'deadline not set',
       description: dto.description,
-      deadline: dto.deadline ?? 'deadline not set'
     }
   }
 }
@@ -25,14 +25,12 @@ export class TodoIndexFiltersTransformer {
   }
 }
 
-
-  export class TodoCreateTransformer {
-    static toDto(form: TodoCreateForm): TodoCreateDto {
-      return {
-        title: form.title,
-        description: form.description,
-        deadline: form.deadline
-      }
+export class TodoCreateTransformer {
+  static toDto(form: TodoCreateForm): TodoCreateDto {
+    return {
+      title: form.title,
+      deadline: form.deadline,
+      description: form.description,
     }
   }
-  
+}

@@ -1,14 +1,34 @@
-import { createTodoControllerCreateTodoV1, type CreateTodoCommand, getTodosControllerGetTodosV1 } from '@/client'
+import type {
+  PaginatedData,
+  PaginationOptions,
+} from '@wisemen/vue-core'
+
+import {
+  type CreateTodoCommand,
+  createTodoControllerCreateTodoV1,
+  getTodosControllerGetTodosV1,
+} from '@/client'
 import type { TodoCreateForm } from '@/models/todo/create/todoCreateForm.model'
 import type { TodoIndex } from '@/models/todo/index/todoIndex.model'
 import type { TodoIndexFilters } from '@/models/todo/index/todoIndexFilters.model'
-import { TodoIndexFiltersTransformer, TodoIndexTransformer } from '@/models/todo/todo.transformer'
+import {
+  TodoIndexFiltersTransformer,
+  TodoIndexTransformer,
+} from '@/models/todo/todo.transformer'
 import { ObjectUtil } from '@/utils/object.util'
 import { PaginationDtoBuilder } from '@/utils/paginationDtoBuilder.util'
-import type { PaginatedData, PaginationOptions } from '@wisemen/vue-core'
-
 
 export class TodoService {
+  static async create(form: TodoCreateForm): Promise<void> {
+    await createTodoControllerCreateTodoV1({
+      body: {
+        title: form.title,
+        deadline: form.deadline,
+        description: form.description,
+      } as CreateTodoCommand,
+    })
+  }
+
   static async getAll(paginationOptions: PaginationOptions<TodoIndexFilters>): Promise<PaginatedData<TodoIndex>> {
     const response = await getTodosControllerGetTodosV1({
       query: new PaginationDtoBuilder(paginationOptions).build(TodoIndexFiltersTransformer.toDto),
@@ -20,14 +40,4 @@ export class TodoService {
       meta: response.data.meta,
     }
   }
-
-    static async create(form: TodoCreateForm): Promise<void> {
-      await createTodoControllerCreateTodoV1({
-        body: {
-          title: form.title ,
-          description: form.description,
-          deadline: form.deadline
-        } as CreateTodoCommand,
-      })
-    }
 }

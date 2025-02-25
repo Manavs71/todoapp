@@ -4,6 +4,6 @@ export interface TodoIndex {
   createdAt: string
   updatedAt: string
   completed: boolean
-  deadline: string 
+  deadline: string
   description: string | null
 }
