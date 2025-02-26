@@ -5,7 +5,8 @@ export type SetUserRolesCommand = {
 };
 
 export enum Permission {
-    ALL_PERMISSIONS = 'all_permissions',
+    ADMIN = 'admin',
+    READ_ONLY = 'read_only',
     USER_READ = 'user.read',
     USER_CREATE = 'user.create',
     USER_UPDATE = 'user.update',
@@ -17,8 +18,7 @@ export enum Permission {
     CONTACT_CREATE = 'contact.create',
     CONTACT_READ = 'contact.read',
     CONTACT_UPDATE = 'contact.update',
-    CONTACT_DELETE = 'contact.delete',
-    TYPESENSE = 'typesense'
+    CONTACT_DELETE = 'contact.delete'
 }
 
 export type RoleResponse = {
@@ -113,8 +113,17 @@ export type UpdateRoleCommand = {
     name: string;
 };
 
-export type ViewRoleIndexResponse = {
-    items: Array<RoleResponse>;
+export type ViewContactIndexResponse = {
+    /**
+     * The items for the current page
+     */
+    items: Array<ContactResponse>;
+    meta: PaginatedOffsetResponseMeta;
+};
+
+export type CreateFileDto = {
+    name: string;
+    mimeType: 'application/pdf' | 'application/msword' | 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' | 'application/vnd.ms-powerpoint' | 'application/vnd.openxmlformats-officedocument.presentationml.presentation' | 'text/plain' | 'text/html' | 'image/jpeg' | 'image/png' | 'image/tiff' | 'image/bmp' | 'image/heic' | 'image/webp' | 'image/gif';
 };
 
 export enum MimeType {
@@ -133,11 +142,6 @@ export enum MimeType {
     IMAGE_WEBP = 'image/webp',
     IMAGE_GIF = 'image/gif'
 }
-
-export type CreateFileDto = {
-    name: string;
-    mimeType: MimeType;
-};
 
 export type CreateFileResponse = {
     uuid: string;
@@ -198,14 +202,6 @@ export type ContactResponse = {
     phone: string | null;
 };
 
-export type ViewContactIndexResponse = {
-    /**
-     * The items for the current page
-     */
-    items: Array<ContactResponse>;
-    meta: PaginatedOffsetResponseMeta;
-};
-
 export enum Theme {
     LIGHT = 'light',
     DARK = 'dark',
@@ -230,18 +226,80 @@ export type ViewPreferencesResponse = {
     highContrast: boolean;
 };
 
-export type PermissionControllerGetPermissionsV1Data = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/api/v1/permissions';
+export enum SortDirection {
+    ASC = 'asc',
+    DESC = 'desc'
+}
+
+export type GetTodosSortQuery = {
+    /**
+     * The key to sort todos by
+     */
+    key: 'deadline';
+    /**
+     * The order to sort todos by
+     */
+    order: SortDirection;
 };
 
-export type PermissionControllerGetPermissionsV1Responses = {
-    200: Array<string>;
+export type GetTodosResponseItem = {
+    uuid: string;
+    createdAt: string;
+    updatedAt: string;
+    title: string;
+    description: string | null;
+    deadline: string | null;
+    completed: boolean;
 };
 
-export type PermissionControllerGetPermissionsV1Response = PermissionControllerGetPermissionsV1Responses[keyof PermissionControllerGetPermissionsV1Responses];
+export type GetTodosResponse = {
+    /**
+     * The items for the current page
+     */
+    items: Array<GetTodosResponseItem>;
+    meta: PaginatedOffsetResponseMeta;
+};
+
+export type TodoNotFoundError = {
+    /**
+     * a human-readable explanation specific to this occurrence of the problem
+     */
+    detail?: string;
+    status: string;
+    code: string;
+};
+
+export type GetTodoResponse = {
+    uuid: string;
+    createdAt: string;
+    updatedAt: string;
+    title: string;
+    description: string | null;
+    deadline: string | null;
+    completed: boolean;
+};
+
+export type CreateTodoCommand = {
+    /**
+     * The title of the todo
+     */
+    title: string;
+    description: string | null;
+    deadline: string | null;
+};
+
+export type CreateTodoResponse = {
+    uuid: string;
+};
+
+export type UpdateTodoCommand = {
+    /**
+     * The title of the todo
+     */
+    title: string;
+    description: string | null;
+    deadline: string | null;
+};
 
 export type SwaggerControllerHandleRedirectData = {
     body?: never;
@@ -276,7 +334,7 @@ export type StatusControllerGetHealthStatusResponses = {
     200: unknown;
 };
 
-export type MigrateCollectionsControllerMigrateV1Data = {
+export type TypesenseControllerMigrateV1Data = {
     body?: never;
     path?: never;
     query?: {
@@ -286,14 +344,14 @@ export type MigrateCollectionsControllerMigrateV1Data = {
     url: '/api/v1/typesense/migrate';
 };
 
-export type MigrateCollectionsControllerMigrateV1Responses = {
+export type TypesenseControllerMigrateV1Responses = {
     /**
      * Successfully migrated collections
      */
     200: unknown;
 };
 
-export type ImportCollectionsControllerImportV1Data = {
+export type TypesenseControllerImportV1Data = {
     body?: never;
     path?: never;
     query?: {
@@ -302,21 +360,21 @@ export type ImportCollectionsControllerImportV1Data = {
     url: '/api/v1/typesense/import';
 };
 
-export type ImportCollectionsControllerImportV1Responses = {
+export type TypesenseControllerImportV1Responses = {
     /**
      * Successfully imported collections
      */
     200: unknown;
 };
 
-export type ViewCollectionsControllerGetCollectionsV1Data = {
+export type TypesenseControllerGetCollectionsV1Data = {
     body?: never;
     path?: never;
     query?: never;
     url: '/api/v1/typesense/collections';
 };
 
-export type ViewCollectionsControllerGetCollectionsV1Responses = {
+export type TypesenseControllerGetCollectionsV1Responses = {
     /**
      * Successfully returned collections
      */
@@ -401,7 +459,7 @@ export type ViewRolesControllerGetRolesV1Responses = {
     /**
      * The roles has been successfully received.
      */
-    200: ViewRoleIndexResponse;
+    200: ViewContactIndexResponse;
 };
 
 export type ViewRolesControllerGetRolesV1Response = ViewRolesControllerGetRolesV1Responses[keyof ViewRolesControllerGetRolesV1Responses];
@@ -472,11 +530,22 @@ export type UpdateRolesBulkControllerUpdateRolesBulkV1Responses = {
     201: unknown;
 };
 
+export type PermissionControllerGetPermissionsV1Data = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/permissions';
+};
+
+export type PermissionControllerGetPermissionsV1Responses = {
+    200: unknown;
+};
+
 export type FileControllerCreateFileV1Data = {
     body: CreateFileDto;
     path?: never;
     query?: never;
-    url: '/api/v1/files';
+    url: '/api/v1/file';
 };
 
 export type FileControllerCreateFileV1Responses = {
@@ -494,7 +563,7 @@ export type FileControllerConfirmFileUploadV1Data = {
         file: string;
     };
     query?: never;
-    url: '/api/v1/files/{file}/confirm-upload';
+    url: '/api/v1/file/{file}/confirm-upload';
 };
 
 export type FileControllerConfirmFileUploadV1Responses = {
@@ -510,7 +579,7 @@ export type FileControllerDownloadFileV1Data = {
         file: string;
     };
     query?: never;
-    url: '/api/v1/files/{file}/download';
+    url: '/api/v1/file/{file}/download';
 };
 
 export type FileControllerRemoveFileV1Data = {
@@ -519,7 +588,7 @@ export type FileControllerRemoveFileV1Data = {
         file: string;
     };
     query?: never;
-    url: '/api/v1/files/{file}';
+    url: '/api/v1/file/{file}';
 };
 
 export type FileControllerRemoveFileV1Responses = {
@@ -624,6 +693,110 @@ export type UpdatePreferencesControllerUpdatePreferencesV1Data = {
 };
 
 export type UpdatePreferencesControllerUpdatePreferencesV1Responses = {
+    200: unknown;
+};
+
+export type GetTodosControllerGetTodosV1Data = {
+    body?: never;
+    path?: never;
+    query?: {
+        pagination?: PaginatedOffsetQuery;
+        sort?: Array<GetTodosSortQuery>;
+    };
+    url: '/api/v1/todos';
+};
+
+export type GetTodosControllerGetTodosV1Responses = {
+    200: GetTodosResponse;
+};
+
+export type GetTodosControllerGetTodosV1Response = GetTodosControllerGetTodosV1Responses[keyof GetTodosControllerGetTodosV1Responses];
+
+export type CreateTodoControllerCreateTodoV1Data = {
+    body: CreateTodoCommand;
+    path?: never;
+    query?: never;
+    url: '/api/v1/todos';
+};
+
+export type CreateTodoControllerCreateTodoV1Responses = {
+    201: CreateTodoResponse;
+};
+
+export type CreateTodoControllerCreateTodoV1Response = CreateTodoControllerCreateTodoV1Responses[keyof CreateTodoControllerCreateTodoV1Responses];
+
+export type DeleteTodoControllerDeleteTodoV1Data = {
+    body?: never;
+    path: {
+        todoUuid: string;
+    };
+    query?: never;
+    url: '/api/v1/todos/{todoUuid}';
+};
+
+export type DeleteTodoControllerDeleteTodoV1Responses = {
+    200: unknown;
+};
+
+export type GetTodosControllerGetTodoV1Data = {
+    body?: never;
+    path: {
+        todoUuid: string;
+    };
+    query?: never;
+    url: '/api/v1/todos/{todoUuid}';
+};
+
+export type GetTodosControllerGetTodoV1Errors = {
+    404: {
+        errors?: Array<TodoNotFoundError>;
+    };
+};
+
+export type GetTodosControllerGetTodoV1Error = GetTodosControllerGetTodoV1Errors[keyof GetTodosControllerGetTodoV1Errors];
+
+export type GetTodosControllerGetTodoV1Responses = {
+    200: GetTodoResponse;
+};
+
+export type GetTodosControllerGetTodoV1Response = GetTodosControllerGetTodoV1Responses[keyof GetTodosControllerGetTodoV1Responses];
+
+export type UpdateTodoControllerUpdateTodoV1Data = {
+    body: UpdateTodoCommand;
+    path: {
+        todoUuid: string;
+    };
+    query?: never;
+    url: '/api/v1/todos/{todoUuid}';
+};
+
+export type UpdateTodoControllerUpdateTodoV1Responses = {
+    200: unknown;
+};
+
+export type CheckTodoControllerCheckTodoV1Data = {
+    body?: never;
+    path: {
+        todoUuid: string;
+    };
+    query?: never;
+    url: '/api/v1/todos/{todoUuid}/check';
+};
+
+export type CheckTodoControllerCheckTodoV1Responses = {
+    200: unknown;
+};
+
+export type UncheckTodoControllerUncheckTodoV1Data = {
+    body?: never;
+    path: {
+        todoUuid: string;
+    };
+    query?: never;
+    url: '/api/v1/todos/{todoUuid}/uncheck';
+};
+
+export type UncheckTodoControllerUncheckTodoV1Responses = {
     200: unknown;
 };
 

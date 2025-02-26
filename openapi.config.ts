@@ -1,7 +1,7 @@
 import { defineConfig } from '@hey-api/openapi-ts'
 
 export default defineConfig({
-  input: 'https://vue.project-template.development.appwi.se/api/docs-json',
+  input: 'https://onboarding-todo.internal.appwi.se/api/docs-json',
   output: 'src/client',
   plugins: [
     'zod',
