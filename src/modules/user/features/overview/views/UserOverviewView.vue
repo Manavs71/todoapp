@@ -26,28 +26,15 @@ const error = computed<unknown>(() => userIndexQuery.error.value)
 <template>
   <AppTablePage :title="i18n.t('user.label.plural')">
     <template #default>
-      <div
-        v-if="error !== null"
-        class="flex size-full flex-1 items-center justify-center"
-      >
+      <div v-if="error !== null" class="flex size-full flex-1 items-center justify-center">
         <AppErrorState :error="error" />
       </div>
 
-      <div
-        v-else
-        class="flex flex-col gap-lg flex-1"
-      >
-        <AppSearchInputField
-          :is-loading="userIndexQuery.isLoading.value"
-          :pagination="pagination"
-        />
+      <div v-else class="flex flex-col gap-lg flex-1">
+        <AppSearchInputField :is-loading="userIndexQuery.isLoading.value" :pagination="pagination" />
 
-        <UserOverviewTable
-          :data="userIndexQuery.data.value"
-          :is-loading="isLoading"
-          :pagination="pagination"
-          :error="userIndexQuery.error.value"
-        />
+        <UserOverviewTable :data="userIndexQuery.data.value" :is-loading="isLoading" :pagination="pagination"
+          :error="userIndexQuery.error.value" />
       </div>
     </template>
   </AppTablePage>
