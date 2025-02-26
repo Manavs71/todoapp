@@ -132,5 +132,24 @@
   "validation.too_small_date": "Moet na {count} liggen",
   "validation.too_small_number": "Moet groter dan of gelijk aan {count} zijn",
   "validation.too_small_string": "Moet minstens {count} teken bevatten | Moet minstens {count} tekens bevatten",
-  "validation.unauthorized": "Ongeautoriseerd"
+  "validation.unauthorized": "Ongeautoriseerd",
+  "module": {
+    "todo": {
+      "create_dialog": {
+        "title": "Voeg todo's"
+      },
+      "form": {
+        "fields": {
+          "title": "titel",
+          "deadline": "deadline",
+          "description": "beschrijving"
+        }
+      },
+      "addbutton": {
+        "text": "Add"
+      },
+      "no_todos": "Geen Todo's gevonden",
+      "title": "Todo's"
+    }
+  }
 }

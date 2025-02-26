@@ -7,7 +7,8 @@ export const zSetUserRolesCommand = z.object({
 });
 
 export const zPermission = z.enum([
-    'all_permissions',
+    'admin',
+    'read_only',
     'user.read',
     'user.create',
     'user.update',
@@ -19,8 +20,7 @@ export const zPermission = z.enum([
     'contact.create',
     'contact.read',
     'contact.update',
-    'contact.delete',
-    'typesense'
+    'contact.delete'
 ]);
 
 export const zRoleResponse = z.object({
@@ -115,8 +115,52 @@ export const zUpdateRoleCommand = z.object({
     name: z.string()
 });
 
-export const zViewRoleIndexResponse = z.object({
-    items: z.array(zRoleResponse)
+export const zViewContactIndexResponse = z.object({
+    items: z.array(z.object({
+        uuid: z.string().uuid(),
+        createdAt: z.string().datetime(),
+        updatedAt: z.string().datetime(),
+        isActive: z.boolean(),
+        firstName: z.union([
+            z.string(),
+            z.null()
+        ]),
+        lastName: z.union([
+            z.string(),
+            z.null()
+        ]),
+        email: z.union([
+            z.string().email(),
+            z.null()
+        ]),
+        phone: z.union([
+            z.string(),
+            z.null()
+        ])
+    })),
+    meta: zPaginatedOffsetResponseMeta
+});
+
+export const zCreateFileDto = z.object({
+    name: z.string(),
+    mimeType: z.enum([
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-powerpoint',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        'text/plain',
+        'text/html',
+        'image/jpeg',
+        'image/jpeg',
+        'image/jpeg',
+        'image/png',
+        'image/tiff',
+        'image/bmp',
+        'image/heic',
+        'image/webp',
+        'image/gif'
+    ])
 });
 
 export const zMimeType = z.enum([
@@ -128,6 +172,8 @@ export const zMimeType = z.enum([
     'text/plain',
     'text/html',
     'image/jpeg',
+    'image/jpeg',
+    'image/jpeg',
     'image/png',
     'image/tiff',
     'image/bmp',
@@ -135,11 +181,6 @@ export const zMimeType = z.enum([
     'image/webp',
     'image/gif'
 ]);
-
-export const zCreateFileDto = z.object({
-    name: z.string(),
-    mimeType: zMimeType
-});
 
 export const zCreateFileResponse = z.object({
     uuid: z.string().uuid(),
@@ -263,11 +304,6 @@ export const zContactResponse = z.object({
     ])
 });
 
-export const zViewContactIndexResponse = z.object({
-    items: z.array(zContactResponse),
-    meta: zPaginatedOffsetResponseMeta
-});
-
 export const zTheme = z.enum([
     'light',
     'dark',
@@ -275,7 +311,7 @@ export const zTheme = z.enum([
 ]);
 
 export const zUpdatePreferencesCommand = z.object({
-    theme: zTheme.optional(),
+    theme: zTheme,
     language: z.string().optional(),
     fontSize: z.string().optional(),
     showShortcuts: z.boolean().optional(),
@@ -298,7 +334,88 @@ export const zViewPreferencesResponse = z.object({
     highContrast: z.boolean()
 });
 
-export const zPermissionControllerGetPermissionsV1Response = z.array(z.string());
+export const zSortDirection = z.enum([
+    'asc',
+    'desc'
+]);
+
+export const zGetTodosSortQuery = z.object({
+    key: z.enum([
+        'deadline'
+    ]),
+    order: zSortDirection
+});
+
+export const zGetTodosResponseItem = z.object({
+    uuid: z.string().uuid(),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime(),
+    title: z.string(),
+    description: z.union([
+        z.string(),
+        z.null()
+    ]),
+    deadline: z.union([
+        z.string().datetime(),
+        z.null()
+    ]),
+    completed: z.boolean()
+});
+
+export const zGetTodosResponse = z.object({
+    items: z.array(zGetTodosResponseItem),
+    meta: zPaginatedOffsetResponseMeta
+});
+
+export const zTodoNotFoundError = z.object({
+    detail: z.string().optional(),
+    status: z.string(),
+    code: z.string()
+});
+
+export const zGetTodoResponse = z.object({
+    uuid: z.string().uuid(),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime(),
+    title: z.string(),
+    description: z.union([
+        z.string(),
+        z.null()
+    ]),
+    deadline: z.union([
+        z.string().datetime(),
+        z.null()
+    ]),
+    completed: z.boolean()
+});
+
+export const zCreateTodoCommand = z.object({
+    title: z.string(),
+    description: z.union([
+        z.string(),
+        z.null()
+    ]),
+    deadline: z.union([
+        z.string(),
+        z.null()
+    ])
+});
+
+export const zCreateTodoResponse = z.object({
+    uuid: z.string().uuid()
+});
+
+export const zUpdateTodoCommand = z.object({
+    title: z.string(),
+    description: z.union([
+        z.string(),
+        z.null()
+    ]),
+    deadline: z.union([
+        z.string(),
+        z.null()
+    ])
+});
 
 export const zViewMeControllerViewMeV1Response = zViewMeResponse;
 
@@ -306,7 +423,7 @@ export const zViewUserControllerViewUserV1Response = zViewUserResponse;
 
 export const zViewUsersControllerViewUserV1Response = zViewUsersResponse;
 
-export const zViewRolesControllerGetRolesV1Response = zViewRoleIndexResponse;
+export const zViewRolesControllerGetRolesV1Response = zViewContactIndexResponse;
 
 export const zViewRoleControllerGetRoleV1Response = zRoleResponse;
 
@@ -319,3 +436,9 @@ export const zCreateContactControllerCreateContactV1Response = zCreateContactRes
 export const zViewContactDetailControllerViewContactDetailV1Response = zViewContactDetailResponse;
 
 export const zViewPreferencesControllerViewPreferencesIndexV1Response = zViewPreferencesResponse;
+
+export const zGetTodosControllerGetTodosV1Response = zGetTodosResponse;
+
+export const zCreateTodoControllerCreateTodoV1Response = zCreateTodoResponse;
+
+export const zGetTodosControllerGetTodoV1Response = zGetTodoResponse;
