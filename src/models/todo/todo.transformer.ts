@@ -4,11 +4,12 @@ import type { todoIndexDto } from './index/todoDto.model'
 import type { TodoIndex } from './index/todoIndex.model'
 import type { TodoIndexFilters } from './index/todoIndexFilters.model'
 import type { TodoIndexFiltersDto } from './index/todoIndexFiltersDto.model'
+import type { TodoUuid } from './todoUuid.model'
 
 export class TodoIndexTransformer {
   static fromDto(dto: todoIndexDto): TodoIndex {
     return {
-      id: dto.uuid,
+      id: dto.uuid as TodoUuid,
       title: dto.title,
       createdAt: dto.createdAt,
       updatedAt: dto.updatedAt,

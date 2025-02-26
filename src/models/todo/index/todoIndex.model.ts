@@ -1,5 +1,7 @@
+import type { TodoUuid } from '../todoUuid.model'
+
 export interface TodoIndex {
-  id: string
+  id: TodoUuid
   title: string
   createdAt: string
   updatedAt: string

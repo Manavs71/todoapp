@@ -136,7 +136,11 @@
   "module": {
     "todo": {
       "create_dialog": {
-        "title": "Add Todo's"
+        "title": "Add Todo's",
+        "description": "Here you can add your todo's"
+      },
+      "update_dialog": {
+        "title": "Update Todo"
       },
       "form": {
         "fields": {
@@ -149,7 +153,10 @@
         "text": "Add"
       },
       "no_todos": "No Todo's Added",
-      "title": "Todo's"
+      "title": "Todo's",
+      "editbutton": {
+        "text": "edit"
+      }
     }
   }
 }

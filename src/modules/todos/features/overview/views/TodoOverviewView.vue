@@ -13,6 +13,7 @@ import { useI18n } from 'vue-i18n'
 import AppPage from '@/components/layout/AppPage.vue'
 import type { TodoIndex } from '@/models/todo/index/todoIndex.model'
 import type { TodoIndexFilters } from '@/models/todo/index/todoIndexFilters.model'
+import type { TodoUuid } from '@/models/todo/todoUuid.model'
 import { useTodoIndexQuery } from '@/modules/todos/api/queries/todoIndex.query'
 
 const variants: VcButtonProps['variant'][] = [
@@ -38,6 +39,12 @@ function onAddTodoCreateDialog(): void {
     id: 'addTodo',
   })
 }
+
+function onEditTodo(id: TodoUuid): void {
+  addTodoCreateDialog.open({
+    todoUuid: id,
+  })
+}
 </script>
 
 <template>
@@ -45,22 +52,37 @@ function onAddTodoCreateDialog(): void {
     <div class="space-y-8">
       <!-- Todo List -->
       <div>
-        <ul v-if="todos.length > 0" class="space-y-4 ml-20 mr-20">
-          <li v-for="todo in todos" :key="todo.id" class="bg-gray-100 p-4 rounded-lg shadow-sm hover:bg-gray-200">
-            <h3 class="text-lg font-semibold">
+        <ul v-if="todos.length > 0" class="space-y-4">
+          <li v-for="todo in todos" :key="todo.id ?? undefined"
+            class="flex justify-between items-center border border-black-600 p-5 rounded-lg shadow-md hover:shadow-lg transition duration-300">
+            <h3 class="text-lg font-semibold text-gray-800">
               {{ todo.title }}
             </h3>
+            <p>
+              {{ todo.description }}
+            </p>
+            <p>
+              {{ todo.deadline }}
+            </p>
+            <VcButton v-for="variant in variants" :key="variant" :variant="variant"
+              class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition"
+              @click="onEditTodo(todo.id)">
+              {{ i18n.t('module.todo.editbutton.text') }}
+            </VcButton>
           </li>
-
-          <VcButton v-for="variant in variants" :key="variant" :variant="variant"
-            class="w-full py-3 text-center bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300"
-            @click="onAddTodoCreateDialog">
-            {{ i18n.t('module.todo.addbutton.text') }}
-          </VcButton>
         </ul>
-        <p v-else class="text-gray-500">
+        <p v-else class="text-center text-gray-500">
           {{ i18n.t('module.todo.no_todos') }}
         </p>
+      </div>
+
+      <!-- Add Todo Button -->
+      <div class="flex justify-center">
+        <VcButton v-for="variant in variants" :key="variant" :variant="variant"
+          class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300 shadow-md"
+          @click="onAddTodoCreateDialog">
+          {{ i18n.t('module.todo.addbutton.text') }}
+        </VcButton>
       </div>
     </div>
   </AppPage>
