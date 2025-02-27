@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import type {
-  VcButtonProps,
-} from '@wisemen/vue-core'
 import {
   useDialog,
   usePagination,
   VcButton,
+  VcDropdownMenu,
   VcIconButton,
 } from '@wisemen/vue-core'
 import { computed } from 'vue'
@@ -19,9 +17,6 @@ import type { TodoUuid } from '@/models/todo/todoUuid.model'
 import { useTodoDeleteMutation } from '@/modules/todos/api/mutations/todoDelete.mutation'
 import { useTodoIndexQuery } from '@/modules/todos/api/queries/todoIndex.query'
 
-const variants: VcButtonProps['variant'][] = [
-  'default',
-]
 const i18n = useI18n()
 const apiErrorToast = useApiErrorToast()
 
@@ -60,48 +55,71 @@ async function onDeleteTodo(todoUuid: TodoUuid): Promise<void> {
     apiErrorToast.show(error)
   }
 }
+
+function formatDate(dateString) {
+  const date = new Date(dateString)
+  const options = {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }
+
+  return new Intl.DateTimeFormat('en-GB', options).format(date)
+}
 </script>
 
 <template>
   <AppPage :title="i18n.t('module.todo.title')">
     <div class="space-y-8">
-      <!-- Todo List -->
-      <div>
-        <ul v-if="todos.length > 0" class="space-y-4">
-          <li v-for="todo in todos" :key="todo.id ?? undefined"
-            class="flex justify-between items-center border border-black-600 p-5 rounded-lg shadow-md hover:shadow-lg transition duration-300">
-            <h3 class="text-lg font-semibold text-gray-800">
-              {{ todo.title }}
-            </h3>
-            <p>
-              {{ todo.description }}
-            </p>
-            <p>
-              {{ todo.deadline }}
-            </p>
-            <VcButton v-for="variant in variants" :key="variant" :variant="variant"
-              class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition ml-auto"
-              @click="onEditTodo(todo.id)">
-              {{ i18n.t('module.todo.editbutton.text') }}
-            </VcButton>
+      <ul v-if="todos.length > 0" class="space-y-4">
+        <li v-for="todo in todos" :key="todo.id ?? undefined"
+          class="flex items-start justify-between gap-4 p-4 bg-gray-200 rounded-lg shadow-md">
+          <div class="flex items-start gap-4">
+            <input type="checkbox" class="w-5 h-5 mt-1">
+            <div class="flex flex-col">
+              <span class="text-lg font-semibold text-gray-800">
+                {{ todo.title }}
+              </span>
+              <span class="text-gray-600">
+                {{ todo.description }}
+              </span>
+              <span class="text-gray-600">
+                {{ formatDate(todo.deadline) }}
+              </span>
+            </div>
+          </div>
 
-            <VcIconButton variant="destructive-tertiary" icon="trash" label="delete" class="ml-auto"
-              @click="onDeleteTodo(todo.id)" />
-          </li>
-        </ul>
-        <p v-else class="text-center text-gray-500">
-          {{ i18n.t('module.todo.no_todos') }}
-        </p>
-      </div>
-
-      <!-- Add Todo Button -->
-      <div class="flex justify-center">
-        <VcButton v-for="variant in variants" :key="variant" :variant="variant"
-          class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300 shadow-md"
-          @click="onAddTodoCreateDialog">
-          {{ i18n.t('module.todo.addbutton.text') }}
-        </VcButton>
-      </div>
+          <VcDropdownMenu :items="[
+            {
+              icon: 'edit',
+              label: 'Bewerk to do',
+              type: 'option',
+              onSelect: () => onEditTodo(todo.id),
+            },
+            {
+              icon: 'trash',
+              label: 'Verwijder to do',
+              type: 'option',
+              onSelect: () => onDeleteTodo(todo.id),
+              isDestructive: true,
+            },
+          ]">
+            <template #trigger>
+              <VcButton class="bg-transparent text-gray-950">
+                ...
+              </VcButton>
+            </template>
+          </VcDropdownMenu>
+        </li>
+      </ul>
+      <p v-else class="text-center text-gray-500">
+        {{ i18n.t('module.todo.no_todos') }}
+      </p>
+    </div>
+    <div class="fixed bottom-4 right-4">
+      <VcIconButton variant="default" icon="plus" label="add"
+        class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-300 shadow-md"
+        @click="onAddTodoCreateDialog" />
     </div>
   </AppPage>
 </template>

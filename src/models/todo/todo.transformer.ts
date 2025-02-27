@@ -1,3 +1,4 @@
+import { CalendarDateTransformer } from '../date/calendarDate.transformer'
 import type { TodoCreateDto } from './create/todoCreateDto.model'
 import type { TodoCreateForm } from './create/todoCreateForm.model'
 import type { todoIndexDto } from './index/todoDto.model'
@@ -30,7 +31,7 @@ export class TodoCreateTransformer {
   static toDto(form: TodoCreateForm): TodoCreateDto {
     return {
       title: form.title,
-      deadline: form.deadline,
+      deadline: CalendarDateTransformer.toNullableDto(form.deadline),
       description: form.description,
     }
   }

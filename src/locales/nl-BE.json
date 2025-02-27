@@ -104,7 +104,7 @@
   "shared.cancel": "Annuleer",
   "shared.close": "Sluiten",
   "shared.edit": "Bewerken",
-  "shared.save": "Maak aan",
+  "shared.save": "Opslaan",
   "user.birth_date": "Geboortedatum",
   "user.first_name": "Voornaam",
   "user.label.plural": "Gebruikers",
@@ -136,7 +136,7 @@
   "module": {
     "todo": {
       "create_dialog": {
-        "title": "Voeg todo's",
+        "title": "Nieuwe to do",
         "description": "Voeg hier je todo's toe"
       },
       "update_dialog": {
@@ -144,16 +144,16 @@
       },
       "form": {
         "fields": {
-          "title": "titel",
-          "deadline": "deadline",
-          "description": "beschrijving"
+          "title": "Titel",
+          "deadline": "Deadline",
+          "description": "Opmerking"
         }
       },
       "addbutton": {
         "text": "Add"
       },
       "no_todos": "Geen Todo's gevonden",
-      "title": "Todo's",
+      "title": "Mijn to do's",
       "editbutton": {
         "text": "edit"
       }

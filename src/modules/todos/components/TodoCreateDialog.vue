@@ -1,9 +1,13 @@
 <script lang="ts" setup>
-import { VcDialog, VcTextField } from '@wisemen/vue-core'
+import {
+  VcDateField,
+  VcDialog,
+  VcTextarea,
+  VcTextField,
+} from '@wisemen/vue-core'
 import { useForm } from 'formango'
 import { useI18n } from 'vue-i18n'
 
-import AppDialogActionCancel from '@/components/app/dialog/AppDialogActionCancel.vue'
 import AppDialogActions from '@/components/app/dialog/AppDialogActions.vue'
 import AppDialogContent from '@/components/app/dialog/AppDialogContent.vue'
 import AppDialogHeader from '@/components/app/dialog/AppDialogHeader.vue'
@@ -67,15 +71,14 @@ function onClose(): void {
   <VcDialog @close="onClose">
     <AppDialogContent class="w-dialog-sm">
       <AppDialogHeader
-        :title="i18n.t(props.todoUuid ? 'module.todo.update_dialog.title' : 'module.todo.create_dialog.title')"
-        :description="props.todoUuid ? props.todoUuid : i18n.t('module.todo.create_dialog.description')" />
+        :title="i18n.t(props.todoUuid ? 'module.todo.update_dialog.title' : 'module.todo.create_dialog.title')" />
       <div class="py-4">
         <AppForm :form="form">
           <VcTextField :label="i18n.t('module.todo.form.fields.title')" v-bind="toFormField(title)" />
-          <VcTextField :label="i18n.t('module.todo.form.fields.deadline')" v-bind="toFormField(deadline)" />
-          <VcTextField :label="i18n.t('module.todo.form.fields.description')" v-bind="toFormField(description)" />
+
+          <VcTextarea :label="i18n.t('module.todo.form.fields.description')" v-bind="toFormField(description)" />
+          <VcDateField :label="i18n.t('module.todo.form.fields.deadline')" v-bind="toFormField(deadline)" />
           <AppDialogActions>
-            <AppDialogActionCancel :label="i18n.t('shared.cancel')" @click="onClose" />
             <FormSubmitButton :form="form"
               :label="i18n.t(props.todoUuid ? 'module.todo.editbutton.text' : 'shared.save')" />
           </AppDialogActions>
