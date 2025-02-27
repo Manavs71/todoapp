@@ -6,6 +6,7 @@ import type {
 import {
   type CreateTodoCommand,
   createTodoControllerCreateTodoV1,
+  deleteTodoControllerDeleteTodoV1,
   getTodosControllerGetTodosV1,
   updateTodoControllerUpdateTodoV1,
 } from '@/client'
@@ -28,6 +29,14 @@ export class TodoService {
         deadline: form.deadline,
         description: form.description,
       } as CreateTodoCommand,
+    })
+  }
+
+  static async delete(todoUuid: TodoUuid): Promise<void> {
+    await deleteTodoControllerDeleteTodoV1({
+      path: {
+        todoUuid: todoUuid!,
+      },
     })
   }
 

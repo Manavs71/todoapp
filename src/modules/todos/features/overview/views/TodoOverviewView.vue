@@ -6,20 +6,24 @@ import {
   useDialog,
   usePagination,
   VcButton,
+  VcIconButton,
 } from '@wisemen/vue-core'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import AppPage from '@/components/layout/AppPage.vue'
+import { useApiErrorToast } from '@/composables/api-error-toast/apiErrorToast.composable'
 import type { TodoIndex } from '@/models/todo/index/todoIndex.model'
 import type { TodoIndexFilters } from '@/models/todo/index/todoIndexFilters.model'
 import type { TodoUuid } from '@/models/todo/todoUuid.model'
+import { useTodoDeleteMutation } from '@/modules/todos/api/mutations/todoDelete.mutation'
 import { useTodoIndexQuery } from '@/modules/todos/api/queries/todoIndex.query'
 
 const variants: VcButtonProps['variant'][] = [
   'default',
 ]
 const i18n = useI18n()
+const apiErrorToast = useApiErrorToast()
 
 const pagination = usePagination<TodoIndexFilters>({
   isRouteQueryEnabled: true,
@@ -27,7 +31,7 @@ const pagination = usePagination<TodoIndexFilters>({
 })
 
 const todoIndexQuery = useTodoIndexQuery(pagination.paginationOptions)
-
+const todoDeleteMutation = useTodoDeleteMutation()
 const todos = computed<TodoIndex[]>(() => todoIndexQuery.data.value?.data as TodoIndex[] || [])
 
 const addTodoCreateDialog = useDialog({
@@ -44,6 +48,17 @@ function onEditTodo(id: TodoUuid): void {
   addTodoCreateDialog.open({
     todoUuid: id,
   })
+}
+
+async function onDeleteTodo(todoUuid: TodoUuid): Promise<void> {
+  try {
+    await todoDeleteMutation.execute({
+      body: todoUuid,
+    })
+  }
+  catch (error) {
+    apiErrorToast.show(error)
+  }
 }
 </script>
 
@@ -65,10 +80,13 @@ function onEditTodo(id: TodoUuid): void {
               {{ todo.deadline }}
             </p>
             <VcButton v-for="variant in variants" :key="variant" :variant="variant"
-              class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition"
+              class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition ml-auto"
               @click="onEditTodo(todo.id)">
               {{ i18n.t('module.todo.editbutton.text') }}
             </VcButton>
+
+            <VcIconButton variant="destructive-tertiary" icon="trash" label="delete" class="ml-auto"
+              @click="onDeleteTodo(todo.id)" />
           </li>
         </ul>
         <p v-else class="text-center text-gray-500">

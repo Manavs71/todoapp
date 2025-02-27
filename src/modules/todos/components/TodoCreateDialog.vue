@@ -18,11 +18,11 @@ import { useTodoCreateMutation } from '@/modules/todos/api/mutations/todoCreate.
 import { useTodoUpdateMutation } from '../api/mutations/todoUpdate.mutation'
 
 const props = defineProps<{
-    todoUuid?: TodoUuid
+  todoUuid?: TodoUuid
 }>()
 
 const emit = defineEmits<{
-    close: []
+  close: []
 }>()
 
 const i18n = useI18n()
@@ -32,26 +32,26 @@ const todoCreateMutation = useTodoCreateMutation()
 const todoUpdateMutation = useTodoUpdateMutation(props.todoUuid)
 
 const form = useForm({
-    schema: todoCreateFormSchema,
-    onSubmit: async (values) => {
-        try {
-            if (props.todoUuid) {
-                await todoUpdateMutation.execute({
-                    body: values,
-                })
-            }
-            else {
-                await todoCreateMutation.execute({
-                    body: values,
-                })
-            }
+  schema: todoCreateFormSchema,
+  onSubmit: async (values) => {
+    try {
+      if (props.todoUuid) {
+        await todoUpdateMutation.execute({
+          body: values,
+        })
+      }
+      else {
+        await todoCreateMutation.execute({
+          body: values,
+        })
+      }
 
-            onClose()
-        }
-        catch (error) {
-            apiErrorToast.show(error)
-        }
-    },
+      onClose()
+    }
+    catch (error) {
+      apiErrorToast.show(error)
+    }
+  },
 })
 
 const title = form.register('title')
@@ -59,29 +59,28 @@ const deadline = form.register('deadline')
 const description = form.register('description')
 
 function onClose(): void {
-    emit('close')
+  emit('close')
 }
 </script>
 
 <template>
-    <VcDialog @close="onClose">
-        <AppDialogContent class="w-dialog-sm">
-            <AppDialogHeader
-                :title="i18n.t(props.todoUuid ? 'module.todo.update_dialog.title' : 'module.todo.create_dialog.title')"
-                :description="props.todoUuid ? props.todoUuid : i18n.t('module.todo.create_dialog.description')" />
-            <div class="py-4">
-                <AppForm :form="form">
-                    <VcTextField :label="i18n.t('module.todo.form.fields.title')" v-bind="toFormField(title)" />
-                    <VcTextField :label="i18n.t('module.todo.form.fields.deadline')" v-bind="toFormField(deadline)" />
-                    <VcTextField :label="i18n.t('module.todo.form.fields.description')"
-                        v-bind="toFormField(description)" />
-                    <AppDialogActions>
-                        <AppDialogActionCancel :label="i18n.t('shared.cancel')" @click="onClose" />
-                        <FormSubmitButton :form="form"
-                            :label="i18n.t(props.todoUuid ? 'module.todo.editbutton.text' : 'shared.save')" />
-                    </AppDialogActions>
-                </AppForm>
-            </div>
-        </AppDialogContent>
-    </VcDialog>
+  <VcDialog @close="onClose">
+    <AppDialogContent class="w-dialog-sm">
+      <AppDialogHeader
+        :title="i18n.t(props.todoUuid ? 'module.todo.update_dialog.title' : 'module.todo.create_dialog.title')"
+        :description="props.todoUuid ? props.todoUuid : i18n.t('module.todo.create_dialog.description')" />
+      <div class="py-4">
+        <AppForm :form="form">
+          <VcTextField :label="i18n.t('module.todo.form.fields.title')" v-bind="toFormField(title)" />
+          <VcTextField :label="i18n.t('module.todo.form.fields.deadline')" v-bind="toFormField(deadline)" />
+          <VcTextField :label="i18n.t('module.todo.form.fields.description')" v-bind="toFormField(description)" />
+          <AppDialogActions>
+            <AppDialogActionCancel :label="i18n.t('shared.cancel')" @click="onClose" />
+            <FormSubmitButton :form="form"
+              :label="i18n.t(props.todoUuid ? 'module.todo.editbutton.text' : 'shared.save')" />
+          </AppDialogActions>
+        </AppForm>
+      </div>
+    </AppDialogContent>
+  </VcDialog>
 </template>
