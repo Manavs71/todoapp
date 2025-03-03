@@ -52,11 +52,8 @@ export class TodoService {
 
   static async update(todoUuid: TodoUuid, form: TodoCreateForm): Promise<void> {
     await updateTodoControllerUpdateTodoV1({
-      body: {
-        title: form.title,
-        deadline: form.deadline,
-        description: form.description,
-      } as CreateTodoCommand,
+      body: TodoCreateTransformer.toDto(form),
+      
       path: {
         todoUuid: todoUuid!,
       },
