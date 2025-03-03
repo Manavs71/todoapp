@@ -2,6 +2,12 @@ import dayjs from '@/plugins/dayjs/dayjs.plugin'
 import { LocaleUtil } from '@/utils/locale.util'
 
 export class DateUtil {
+  static getTomorrow() {
+    throw new Error('Method not implemented.')
+  }
+  static getDaysFromToday(arg0: number) {
+    throw new Error('Method not implemented.')
+  }
   /**
    * Get the duration in seconds between two dates.
    * @param startDate The start date.
